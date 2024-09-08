@@ -6,7 +6,11 @@ from sqlalchemy import pool
 from alembic import context
 
 from src.entity.models import Base
-from src.database.db import SQLALCHEMY_DATABASE_URL
+# from src.database.db import SQLALCHEMY_DATABASE_URL
+from src.conf.config import settings  # Import settings from the app
+
+
+SQLALCHEMY_DATABASE_URL = settings.sqlalchemy_database_url.replace("postgresql+asyncpg", "postgresql")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

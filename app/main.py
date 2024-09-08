@@ -1,26 +1,28 @@
-from datetime import datetime
 import os
 import signal
 import traceback
-from pytest import Session
-from sqlalchemy import text
-import uvicorn
 import logging
-
-from fastapi import Depends, FastAPI, HTTPException
+from datetime import datetime
 from contextlib import asynccontextmanager
 
-import uvicorn.logging
+import uvicorn
 import redis.asyncio as redis
-
-from fastapi_limiter import FastAPILimiter
+from pytest import Session
+from sqlalchemy import text
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_limiter import FastAPILimiter
+
 from src.conf.config import settings
 from src.database.db import engine, SessionLocal, redis_client_async, get_db
 from src.routes import auth
+from src.routes.document_routes import router as document_router
+# from src.routes.question_routes import router as question_router
+# from src.routes.history_routes import router as history_router
 
 
-logger = logging.getLogger(uvicorn.logging.__name__)
+# logger = logging.getLogger(uvicorn.logging.__name__)
+logger = logging.getLogger("uvicorn")
 
 origins = settings.cors_origins.split('|')
 
@@ -51,9 +53,10 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix='/api')
-# !app.include_router(photos.router, prefix="/api")
-# !app.include_router(users.router, prefix='/api')
-# !app.include_router(comments.router, prefix='/api')
+app.include_router(document_router, prefix="/documents", tags=["documents"])        #VY
+# app.include_router(question_router, prefix="/questions", tags=["questions"])        #VY
+# app.include_router(history_router, prefix="/history", tags=["history"])     #VY
+
 
 @app.get("/")
 def read_root():
